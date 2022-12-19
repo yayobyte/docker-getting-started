@@ -60,7 +60,7 @@ You can do any change in the app, and then you can deploy again
 > docker `build` -t *getting-started*
 5. Run the container again with the new changes
 > docker `run` -dp 3000:3000 *getting-started*\
-> \
+
 > `-d` will run in detached mode\
 > `-p` port forwarding option (short version)
 
@@ -94,22 +94,17 @@ If you want to persist the data, you should use **volumes**. Think of volumes as
 
 ## Dev Mode Container
 To run the container in dev mode `hot reloading` to have the changes in your code base reflected inside the container:
-1. Run the following command
-
+Run the following command
 
     docker run -dp 3000:3000
     -w /app -v "$(pwd):/app"
     node:18-alpine
     sh -c "yarn install && yarn run dev"
 
-> `-dp 3000:3000` same as before port forwarding
-
-> `-w /app` working directory *inside* the container
-
-> `-v "$(pwd):/app"` *bind mount* (link) the **host** present dir with the **containers** route dir `/app` but docker requires absolute path, for that we use `psd` instruction
-
-> `node:18-alpine` image to use
-
+> `-dp 3000:3000` same as before port forwarding\
+> `-w /app` working directory *inside* the container\
+> `-v "$(pwd):/app"` *bind mount* (link) the **host** present dir with the **containers** route dir `/app` but docker requires absolute path, for that we use `psd` instruction\
+> `node:18-alpine` image to use\
 > `sh -c` initial command to run
 
 2. if you want to see the logs, use the instruction:
@@ -133,14 +128,10 @@ For this example, we will create a MySQL container to have db functionality in t
     -e MYSQL_DATABASE=todos \
     mysql:8.0
 
-> `--network` **todo-app** will be the network we created before
-
-> `--network-alias` adds network-scoped alias for the container, in this case: **mysql** (works as the host name/IP address)
-
-> `-v` will create a volume **todo-mysql-data** and will be linked to the path **/var/lib/mysql** which is the place where *mysql* stores the data
-
-> `-e` set environment var
-
+> `--network` **todo-app** will be the network we created before\
+> `--network-alias` adds network-scoped alias for the container, in this case: **mysql** (works as the host name/IP address)\
+> `-v` will create a volume **todo-mysql-data** and will be linked to the path **/var/lib/mysql** which is the place where *mysql* stores the data\
+> `-e` set environment var\
 > `mysql:8.0` image to use
 
 Now we can run our app in `development mode` connecting it to the previous MYSQL server and passing the required `env vars` to connect to db and telling docker which `network` to use
