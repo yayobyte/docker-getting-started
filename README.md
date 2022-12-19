@@ -1,6 +1,6 @@
 # GETTING STARTED WITH DOCKER
 This repo was generated to start in the `docker` world. Just for learning purposes.
-All these docs has been taken from
+All these docs have been taken from
 
 > docker `run` -d -p 80:80 docker/getting-started
 
@@ -35,13 +35,13 @@ Taking a look at the `Dockerfile` that is the command used to build the image an
 > `tag-name` is the name of the app\
 > `.` (at the end) as parameter will tell docker to use Dockerfile in the root of the folder\
 > \
-> docker `build` -t *tag-name* .
+> docker `build` -t *getting-started* .
 
-![build](/docs/build.png "build")
+![build](docs/build.png "build")
 
 ## Starting a Container
 Now that we have an image, we should start the container
-> docker `run` -dp 3000:3000 *tag-name*
+> docker `run` -dp 3000:3000 *getting-started*
 
 After a few seconds you will see the webapp running in
 > http://localhost:3000
@@ -57,9 +57,9 @@ You can do any change in the app, and then you can deploy again
 3. Remove the container
 > docker `rm` *container-id*
 4. Build the container again (make sure to use tags to identify your container)
-> docker `build` -t *tag-name*
+> docker `build` -t *getting-started*
 5. Run the container again with the new changes
-> docker `run` -dp 3000:3000 *tag-name*\
+> docker `run` -dp 3000:3000 *getting-started*\
 > \
 > `-d` will run in detached mode\
 > `-p` port forwarding option (short version)
@@ -84,13 +84,13 @@ You can test your container online with https://labs.play-with-docker.com and ru
 ## Volumes
 If you want to persist the data, you should use **volumes**. Think of volumes as a simple bucket of data
 1. Create a volume
-> docker `volume` create *volume-name*
+> docker `volume` create *todo-db*
 2. Run the container but binding the **volume** to the route you want to persist the data to
-> docker `run` -dp 3000:3000 -v *volume-name:/path-to-data* **tag-name**
+> docker `run` -dp 3000:3000 -v *todo-db:/app* **getting-started**
 
-> `-v` option will use the previously created volume and will use the **path-to-data** to make the data persist
+> `-v` option will use the previously created volume and will use the **/app** path to make the data persist
 3. Use the volume inspect command if you want to know more about the volume
-> docker `volume` inspect *volume-name*
+> docker `volume` inspect *todo-db*
 
 ## Dev Mode Container
 To run the container in dev mode `hot reloading` to have the changes in your code base reflected inside the container:
@@ -116,12 +116,64 @@ To run the container in dev mode `hot reloading` to have the changes in your cod
 > docker `logs` -f *container-id*
 3. Do any kind of changes in the code, and you will see them reflected
 
-## Multi-container Apps (Docker Compose)
+## Multi-container Apps
 Usually an app is build using different services, and to achieve that you can deploy multiple containers each one with one single responsibility but connected by one *internal* `network`
+### Networks
+If two containers are on the same network, they can talk to each other. If they aren't, they can't.
+
+1. Let's create a new network
+> docker `network` create *todo-app*
+2. For this example, we will create a MySQL container to have db functionality in the app
+
+
+    docker run -d \
+    --network todo-app --network-alias mysql \
+    -v todo-mysql-data:/var/lib/mysql \
+    -e MYSQL_ROOT_PASSWORD=secret \
+    -e MYSQL_DATABASE=todos \
+    mysql:8.0
+
+> `--network` **todo-app** will be the network we created before
+
+> `--network-alias` adds network-scoped alias for the container, in this case: **mysql** (works as the host name/IP address)
+
+> `-v` will create a volume **todo-mysql-data** and will be linked to the path **/var/lib/mysql** which is the place where *mysql* stores the data
+
+> `-e` set environment var
+
+> `mysql:8.0` image to use
+
+3. Now we can run our app in `development mode` connecting it to the previous MYSQL server and passing the required `env vars` to connect to db and telling docker which `network` to use
+
+
+    docker run -dp 3000:3000 \
+    -w /app -v "$(pwd):/app" \
+    --network todo-app \
+    -e MYSQL_HOST=mysql \
+    -e MYSQL_USER=root \
+    -e MYSQL_PASSWORD=secret \
+    -e MYSQL_DB=todos \
+    node:18-alpine \
+    sh -c "yarn install && yarn run dev"
+
+Now both of the containers are connected in the same network and the data is being persisted
+
+![network](docs/network.png "network")
+
+![app](docs/app.png "app")
+
+## Docker Compose
+Is a tool to help develop, define and share `Multi-container` apps with a single file `docker-compose.yml`
 
 ## Other useful commands
 > docker `exec` *container-id*  command
+
 > docker `logs` -f *container-id*
+
+## Useful containers
+> docker `exec` -it <mysql-container-id> mysql -p
+
+> docker `run` -it --network todo-app nicolaka/netshoot
 
 # Resources
 > https://www.dockerhub.com
