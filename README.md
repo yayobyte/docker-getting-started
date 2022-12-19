@@ -18,9 +18,9 @@ All these docs has been taken from
 Taking a look at the `Dockerfile` that is the command used to build the image and then run:
 > `// tag-name is the name of the app `\
 > `// "." as parameter will tell docker to use Dockerfile in the root of the folder`\
-> docker `build` -t <tag-name> .
+> docker `build` -t *tag-name* .
 
-!![build](/docs/build.png "build")
+![build](/docs/build.png "build")
 
 ### Starting a Container
 Now that we have an image, we should start the container
@@ -36,9 +36,9 @@ You can do any change in the app, and then you can deploy again
 > `// list all running containers to get container-id`\
 > docker `ps`
 
-> docker `stop` *<container-id>*
+> docker `stop` *container-id*
 
-> docker `rm` *<container-id>*
+> docker `rm` *container-id*
 
 
 
