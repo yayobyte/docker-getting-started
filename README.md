@@ -13,8 +13,19 @@ All these docs has been taken from
 - `webapp` created in react and will use its own container
 - `mysql` server in an isolated container
 
-## Contents
-### Building the image
+# Contents
+## Creating the container
+First we have to create a `Dockerfile` in our repo. Make sure you do not use any extension
+
+``
+    FROM node:18-alpine 
+    WORKDIR /app
+    COPY . .
+    RUN yarn install --production
+    CMD ["node", "src/index.js"]
+``
+
+## Building the image
 Taking a look at the `Dockerfile` that is the command used to build the image and then run:
 > `// tag-name is the name of the app `\
 > `// "." as parameter will tell docker to use Dockerfile in the root of the folder`\
@@ -22,7 +33,7 @@ Taking a look at the `Dockerfile` that is the command used to build the image an
 
 ![build](/docs/build.png "build")
 
-### Starting a Container
+## Starting a Container
 Now that we have an image, we should start the container
 > docker `run` -dp 3000:3000 getting-started
 
@@ -41,8 +52,7 @@ You can do any change in the app, and then you can deploy again
 > docker `rm` *container-id*
 
 
-
-## Resources
+# Resources
 > https://www.dockerhub.com
 
 > https://labs.play-with-docker.com
