@@ -17,18 +17,24 @@ All these docs has been taken from
 ## Creating the container
 First we have to create a `Dockerfile` in our repo. Make sure you do not use any extension
 
-``
     FROM node:18-alpine 
     WORKDIR /app
     COPY . .
     RUN yarn install --production
     CMD ["node", "src/index.js"]
-``
+
+> `FROM` which image to use\
+> `WORKDIR` which dir will now be used as root from now on inside the container\
+> `COPY` from which directory in the code to which `WORKDIR` in the container\ 
+> `RUN` which command to run after previous step\
+> `CMD` specifies the instruction that is to be executed when a Docker container starts.
+
 
 ## Building the image
 Taking a look at the `Dockerfile` that is the command used to build the image and then run:
-> `// tag-name is the name of the app `\
-> `// "." as parameter will tell docker to use Dockerfile in the root of the folder`\
+> // `tag-name` is the name of the app\
+> // `.` as parameter will tell docker to use Dockerfile in the root of the folder\
+> \
 > docker `build` -t *tag-name* .
 
 ![build](/docs/build.png "build")
