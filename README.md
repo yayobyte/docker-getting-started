@@ -121,10 +121,10 @@ Usually an app is build using different services, and to achieve that you can de
 ### Networks
 If two containers are on the same network, they can talk to each other. If they aren't, they can't.
 
-1. Let's create a new network
+Let's create a new network
 > docker `network` create *todo-app*
-2. For this example, we will create a MySQL container to have db functionality in the app
 
+For this example, we will create a MySQL container to have db functionality in the app
 
     docker run -d \
     --network todo-app --network-alias mysql \
@@ -143,8 +143,7 @@ If two containers are on the same network, they can talk to each other. If they 
 
 > `mysql:8.0` image to use
 
-3. Now we can run our app in `development mode` connecting it to the previous MYSQL server and passing the required `env vars` to connect to db and telling docker which `network` to use
-
+Now we can run our app in `development mode` connecting it to the previous MYSQL server and passing the required `env vars` to connect to db and telling docker which `network` to use
 
     docker run -dp 3000:3000 \
     -w /app -v "$(pwd):/app" \
