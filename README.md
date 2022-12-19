@@ -153,7 +153,76 @@ Now both of the containers are connected in the same network and the data is bei
 ![app](docs/app.png "app")
 
 ## Docker Compose
-Is a tool to help develop, define and share `Multi-container` apps with a single file `docker-compose.yml`
+Is a tool to help develop, define and share `Multi-container` apps with a single file `docker-compose.yml` the file always starts with the `services` tag and the next level will be the app name (it can be what ever name, but it will become a `--network-alias`)
+    
+    services:
+        app: //we will define the web app here 
+        mysql: //we will define the mysql server here
+
+Let's now migrate our previous scripts into the `docker-compose.yml` file:
+
+1. WebApp
+
+As previously defined this into one script we will transpile the script into `docker compose` config:
+
+    services:
+        app:
+            image: node:18-alpine
+            command: sh -c "yarn install && yarn run dev"
+            ports:
+                - 3000:3000
+            working_dir: /app
+            volumes:
+                - ./:/app
+            environment:
+                MYSQL_HOST: mysql
+                MYSQL_USER: root
+                MYSQL_PASSWORD: secret
+                MYSQL_DB: todos
+
+> `app` name of the service, it will be used as **--network-alias**
+> `image` name of the image to use\
+> `ports` port forwarding short syntax ([long syntax here](https://docs.docker.com/compose/compose-file/#long-syntax-2)) \
+> `working_dir` working dir inside the container\
+> `volumes` short syntax for volumes *VOLUME:CONTAINER_PATH* ([long syntax here](https://docs.docker.com/compose/compose-file/#long-syntax-4))\
+> `environment` list of all the env vars needed
+
+2. MYSQL service
+
+Now let's migrate the MYSQL command to the yml configuration
+
+    services:
+        app:
+            # The previous app service definition
+        mysql:
+            image: mysql:8.0
+            volumes:
+                - todo-mysql-data:/var/lib/mysql
+            environment:
+                MYSQL_ROOT_PASSWORD: secret
+                MYSQL_DATABASE: todos
+    
+    volumes:
+        todo-mysql-data:
+
+> `mysql` name of the service, it will be used as **--network-alias**\
+> `image` image to use
+> `volumes` short syntax *VOLUME:CONTAINER_PATH*\
+> `environment` env vars\
+> `volumes` (root level) config new volumes to be created\
+> `todo-mysql-data` name of the new volume to be used
+
+3. Put all together in one `docker-compose.yml` file and run the command
+
+> docker `compose` up
+
+Now the whole app including the web service and the db service are running into one single container and this will look something similar to this:
+
+![compose](docs/compose.png "compose")
+
+Once you are ready, simply run
+
+> docker `compose` down
 
 ## Other useful commands
 > docker `exec` *container-id*  command
